@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 模型文件（体积大，不提交到 git）
+models/*.onnx
+models/*.engine
+models/*.plan
+models/*.pth
+models/*.safetensors
+
+# 输出结果
+results/*.png
+results/*.jpg
+results/*.jpeg
+
+# 日志
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# TensorRT
+*.cache
+*.profile
+
+# 临时文件
+tmp/
+temp/
+*.tmp

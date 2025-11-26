@@ -1,0 +1,45 @@
+# FLUX.1-dev 推理优化项目依赖
+# Python 3.10+
+
+# ==================== 核心框架 ====================
+torch==2.8.0
+torchvision==0.23.0
+torchaudio==2.8.0
+
+# ==================== Diffusers 和 Transformers ====================
+diffusers==0.35.2
+transformers==4.57.3
+accelerate==1.6.0
+safetensors==0.7.0
+huggingface-hub==0.36.0
+
+# ==================== ONNX 相关 ====================
+onnx==1.19.1
+onnxruntime-gpu==1.23.2  # GPU 版本，CPU 版本用 onnxruntime
+
+# ==================== TensorRT 相关 ====================
+# TensorRT 通常随 CUDA 一起安装，或从 NVIDIA 官网下载
+# tensorrt==10.0.1
+# tensorrt_cu12==10.14.1.48.post1
+# torch_tensorrt==2.9.0
+pycuda==2025.1.2
+
+# ==================== 图像处理 ====================
+pillow==12.0.0
+numpy==2.3.5
+opencv-python==4.11.0.86
+imageio==2.37.0
+
+# ==================== 科学计算 ====================
+scipy==1.15.2
+
+# ==================== 工具库 ====================
+tqdm==4.67.1
+einops==0.8.1
+pyyaml==6.0.3
+regex==2025.11.3
+
+# ==================== 可选：监控和调试 ====================
+# gpustat==1.1.1
+# nvitop  # GPU 监控
+# icecream==2.1.4  # 调试打印
