@@ -1,217 +1,218 @@
-# FLUX.1-dev 推理优化项目
+# FLUX.1-dev Inference Optimization
 
-本项目提供了 FLUX.1-dev 模型的完整推理流程，包括多种推理后端和精度选项。
+> Export FLUX.1-dev model to ONNX format and TensorRT Engine for optimized inference
 
-## ✨ 特性
+[中文版](README-zh.md) | English
 
-- ✅ **PyTorch Baseline** - 原生 BF16 推理
-- ✅ **ONNX Runtime** - 跨平台推理，支持 FP16/BF16
-- ✅ **TensorRT** - NVIDIA GPU 极致加速，支持 FP16/BF16
-- ✅ **完整图像生成** - 输入 prompt，输出图片
-- ✅ **多精度支持** - FP32、FP16、BF16
+## ✨ Features
+
+- 🔄 Export FLUX.1-dev Transformer to ONNX format
+- ⚡ TensorRT Engine acceleration for faster inference
+- 🎨 Complete image generation pipeline (text to image)
+- 📊 Multiple precision support (FP32, FP16, BF16)
+- 🖼️ 1024x1024 high-quality image generation
 
 ## 📋 TODO
 
-- [ ] INT8 量化支持 (TensorRT)
-- [ ] FP8 精度支持 (需要 Hopper GPU)
-- [ ] 动态分辨率支持
-- [ ] Batch 推理优化
-- [ ] 多 GPU 并行推理
-- [ ] Text Encoder / VAE 的 TensorRT 加速
-- [ ] CUDA Graph 优化
+- [ ] INT8 quantization support (TensorRT)
+- [ ] FP8 precision support (requires Hopper GPU)
+- [ ] Dynamic resolution support
+- [ ] Batch inference support
+- [ ] Multi-GPU inference
+- [ ] CUDA Graph optimization
+- [ ] Streaming output support
 
-## 🖼️ 生成结果
-
-使用相同的 prompt 和 seed，不同推理后端的生成效果：
-
-**Prompt**: *"A masterpiece photo of a beautiful sunset over rugged mountains, with dramatic, fiery clouds filling the sky. In the foreground, a golden retriever and a fluffy calico cat sit side-by-side on a rocky outcrop, looking out at the view."*
-
-| Baseline (BF16) | ONNX (FP16) | ONNX (BF16) |
-|:---------------:|:-----------:|:-----------:|
-| ![baseline](results/baseline_flux_bf16.png) | ![onnx_fp16](results/onnx_output_fp16.png) | ![onnx_bf16](results/onnx_output_bf16.png) |
-
-| TensorRT (FP16) | TensorRT (BF16) |
-|:---------------:|:---------------:|
-| ![trt_fp16](results/tensorrt_output_fp16.png) | ![trt_bf16](results/tensorrt_output_bf16.png) |
-
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 flux-inference/
-├── base_model.py           # PyTorch baseline 推理
-├── onnx_model.py           # ONNX 模型导出
-├── onnx_infer.py           # ONNX 完整图像生成
-├── tensorrt_model.py       # TensorRT Engine 构建
-├── tensorrt_infer.py       # TensorRT 完整图像生成
-├── requirements.txt        # Python 依赖
-├── README.md               # 本文件
-├── models/                 # 存放导出的模型
-│   ├── flux_transformer_{precision}.onnx
-│   ├── flux_transformer_{precision}_weights.bin
-│   └── flux_transformer_{precision}.engine
-└── results/                # 存放生成的图片
-    ├── baseline_flux_bf16.png
-    ├── onnx_output_{precision}.png
-    └── tensorrt_output_{precision}.png
+├── base_model.py       # PyTorch baseline inference
+├── onnx_model.py       # ONNX export tool
+├── onnx_infer.py       # ONNX inference pipeline
+├── tensorrt_model.py   # TensorRT engine builder
+├── tensorrt_infer.py   # TensorRT inference pipeline
+├── models/             # Exported models directory
+│   ├── flux_transformer_{precision}/  # ONNX model
+│   └── flux_transformer_{precision}.engine  # TensorRT engine
+├── temp/               # Temporary files during export
+├── results/            # Generated images
+│   ├── baseline_flux_{precision}.png
+│   ├── onnx_output_{precision}.png
+│   └── tensorrt_output_{precision}.png
+├── requirements.txt
+├── README.md           # Chinese documentation
+└── README_EN.md        # English documentation (this file)
 ```
 
-## 🔧 环境要求
+## 🖼️ Generated Results
 
-### 硬件
-- NVIDIA GPU (推荐 40GB+ 显存，如 A100/A800)
+### Comparison
+
+| Baseline (BF16) | ONNX (FP16) | ONNX (BF16) |
+|:---:|:---:|:---:|
+| ![Baseline BF16](results/baseline_flux_bf16.png) | ![ONNX FP16](results/onnx_output_fp16.png) | ![ONNX BF16](results/onnx_output_bf16.png) |
+
+| TensorRT (FP16) | TensorRT (BF16) |
+|:---:|:---:|
+| ![TensorRT FP16](results/tensorrt_output_fp16.png) | ![TensorRT BF16](results/tensorrt_output_bf16.png) |
+
+**Prompt**: `"A cat holding a sign that says hello world"`
+
+## 🔧 Requirements
+
+### Hardware Requirements
+- NVIDIA GPU (tested on A800-SXM4-80GB)
 - CUDA 12.0+
-- TensorRT 10.0+
+- Recommended 40GB+ VRAM
 
-### 软件
-- Python 3.10+
-- PyTorch 2.0+
-- ONNX Runtime GPU 1.16+
-- TensorRT 10.x
-
-## 🚀 快速开始
-
-### 1. 安装依赖
-
+### Software Requirements
 ```bash
-# 创建虚拟环境
-conda create -n flux python=3.10
-conda activate flux
-
-# 安装 PyTorch (CUDA 12.x)
-pip install torch torchvision torchaudio
-
-# 安装项目依赖
 pip install -r requirements.txt
-
-# 安装 ONNX Runtime GPU 版本
-pip uninstall onnxruntime -y
-pip install onnxruntime-gpu
-
-# TensorRT 通常随 CUDA 一起安装，或从 NVIDIA 官网下载
 ```
 
-### 2. 下载 FLUX.1-dev 模型
+Main dependencies:
+- torch >= 2.8.0
+- diffusers >= 0.35.0
+- transformers >= 4.50.0
+- onnxruntime-gpu >= 1.20.0
+- tensorrt >= 10.0.0 (separate installation required)
+
+## 🚀 Quick Start
+
+### 1. Baseline Inference (PyTorch)
 
 ```bash
-huggingface-cli login
-huggingface-cli download black-forest-labs/FLUX.1-dev --local-dir /path/to/models/FLUX.1-dev
-```
-
-### 3. 配置模型路径
-
-修改各文件 `__main__` 中的 `REPO_ROOT` 变量：
-
-```python
-REPO_ROOT = "/path/to/your/FLUX.1-dev"
-```
-
-## 📖 使用方法
-
-### Baseline PyTorch 推理
-
-```bash
+# Run baseline inference
 python base_model.py
+
+# Output: results/baseline_flux_{PRECISION}.png
 ```
 
-输出: `results/baseline_flux_bf16.png`
-
-### ONNX 导出和推理
+### 2. Export ONNX Model
 
 ```bash
-# Step 1: 导出 ONNX 模型 (首次需要，约 5 分钟)
+# Export FLUX Transformer to ONNX format
 python onnx_model.py
 
-# Step 2: 使用 ONNX 生成图像
+# Model saved to: models/flux_transformer_{PRECISION}/
+```
+
+### 3. ONNX Inference
+
+```bash
+# Run full image generation pipeline
 python onnx_infer.py
 
-# 或者只运行基准测试
-python onnx_infer.py benchmark
-
-# 检查 GPU 支持
-python onnx_infer.py check
+# Output: results/onnx_output_{PRECISION}.png
 ```
 
-输出: `results/onnx_output_{precision}.png`
-
-### TensorRT 加速推理
+### 4. Build TensorRT Engine
 
 ```bash
-# Step 1: 构建 TensorRT Engine (首次需要，约 5-10 分钟)
+# Build TensorRT engine (first build takes 5-10 minutes)
 python tensorrt_model.py
 
-# Step 2: 使用 TensorRT 生成图像
-python tensorrt_infer.py
-
-# 或者只运行基准测试
-python tensorrt_infer.py benchmark
+# Engine saved to: models/flux_transformer_{PRECISION}.engine
 ```
 
-输出: `results/tensorrt_output_{precision}.png`
-
-## ⚙️ 精度配置
-
-在各文件的 `__main__` 函数中修改 `PRECISION` 变量：
-
-```python
-PRECISION = "bf16"  # 可选: "fp32", "fp16", "bf16"
-```
-
-### 精度说明
-
-| 精度 | ONNX | TensorRT | 说明 |
-|------|:----:|:--------:|------|
-| FP32 | ✅ | ❌ | 标准精度，显存占用大 |
-| FP16 | ✅ | ✅ | 推荐，速度快 |
-| BF16 | ✅* | ✅ | 导出时转为 FP16 |
-| INT8 | ⏳ | ⏳ | TODO: 需要校准数据 |
-| FP8 | ❌ | ⏳ | TODO: 需要 Hopper GPU |
-
-*BF16 导出时会转换为 FP16，因为 ONNX Runtime 对 BF16 支持有限
-
-## 📊 性能对比
-
-基于 NVIDIA A800 (80GB) 的测试结果（1024x1024，28 steps）：
-
-| 方法 | Transformer 推理时间 | 完整生成时间 | 显存占用 |
-|------|---------------------|-------------|---------|
-| PyTorch (BF16) | ~350ms/step | ~12s | ~45GB |
-| ONNX Runtime (FP16) | ~300ms/step | ~10s | ~40GB |
-| TensorRT (FP16) | ~180ms/step | ~7s | ~35GB |
-
-*实际性能取决于具体硬件和配置*
-
-## ❓ 常见问题
-
-### 1. ONNX 导出失败：`rms_norm` 不支持
-
-已在 `onnx_model.py` 中注册了自定义的 `rms_norm` 符号化函数。
-
-### 2. TensorRT 找不到外部权重
-
-确保 ONNX 文件和 `*_weights.bin` 在同一目录下。
-
-### 3. ONNX Runtime 没有使用 GPU
+### 5. TensorRT Inference
 
 ```bash
-# 确保安装的是 GPU 版本
-pip uninstall onnxruntime onnxruntime-gpu -y
-pip install onnxruntime-gpu
+# Run full image generation pipeline
+python tensorrt_infer.py
 
-# 运行检查
+# Output: results/tensorrt_output_{PRECISION}.png
+```
+
+## ⚙️ Configuration
+
+Edit the configuration in the `main()` function of each file:
+
+### Precision Options
+
+| Precision | Description | VRAM Usage | Speed |
+|-----------|-------------|------------|-------|
+| `fp32` | Full precision | Highest | Slowest |
+| `fp16` | Half precision | Medium | Fast |
+| `bf16` | Brain floating point | Medium | Fast |
+
+### Important Parameters
+
+```python
+# Model path
+repo_root = "/path/to/FLUX.1-dev"
+
+# Precision (fp32, fp16, bf16)
+PRECISION = "bf16"
+
+# Output resolution (fixed 1024x1024)
+height, width = 1024, 1024
+
+# Number of inference steps
+num_inference_steps = 28
+```
+
+## 🔬 Performance Testing
+
+### Benchmark Mode
+
+```bash
+# Modify run_full_pipeline() call
+run_full_pipeline(repo_root, PRECISION, mode="benchmark")
+```
+
+### Check Mode
+
+Generates a simple test image to verify the pipeline:
+
+```bash
+# Modify run_full_pipeline() call
+run_full_pipeline(repo_root, PRECISION, mode="check")
+```
+
+## 📝 Notes
+
+### About FP8/INT8 Support
+
+- **FP8**: Requires Hopper GPU (H100+), TensorRT 9.0+, CUDA 12.0+
+- **INT8**: Requires calibration dataset
+
+Currently, only FP32/FP16/BF16 are implemented. FP8/INT8 support is planned for future releases.
+
+### About Dynamic Resolution
+
+Current implementation uses fixed dimensions (1024x1024). Dynamic resolution support is planned for future releases.
+
+## 🐛 Troubleshooting
+
+### 1. TensorRT External Weights Not Found
+
+This is handled automatically by `tensorrt_model.py` which changes the working directory during engine build.
+
+### 2. OOM (Out of Memory) Error
+
+ONNX export requires a lot of VRAM. Make sure you have at least 40GB of VRAM available.
+
+### 3. ONNX GPU Execution Issues
+
+Run the check script first:
+
+```bash
+# Check ONNX GPU support
 python onnx_infer.py check
 ```
 
-### 4. TensorRT 构建时间过长
+### 4. Long TensorRT Build Time
 
-首次构建需要 5-10 分钟，这是正常的。Engine 会被缓存，后续加载很快（~20s）。
+First build takes 5-10 minutes, this is normal. The engine will be cached and subsequent loads are fast (~20s).
 
-### 5. 显存不足 (OOM)
+### 5. Insufficient VRAM
 
-- 确保有足够的 GPU 显存 (推荐 40GB+)
-- 关闭其他 GPU 程序
-- 对于 TensorRT，调整 `max_workspace_size` 参数
+- Ensure you have enough GPU VRAM (40GB+ recommended)
+- Close other GPU applications
+- For TensorRT, adjust the `max_workspace_size` parameter
 
-## 🔗 参考资源
+## 🔗 References
 
 - [FLUX.1 Official Repo](https://github.com/black-forest-labs/flux)
 - [Diffusers Documentation](https://huggingface.co/docs/diffusers)
@@ -220,16 +221,16 @@ python onnx_infer.py check
 
 ## 📄 License
 
-本项目代码遵循 MIT License。
+This project code is licensed under the MIT License.
 
-FLUX.1-dev 模型的使用需遵循其原始许可证。
+FLUX.1-dev model usage is subject to its original license.
 
-## 🙏 致谢
+## 🙏 Acknowledgments
 
-- **[Black Forest Labs](https://blackforestlabs.ai/)** - 开源 FLUX.1 模型
-- **[Hugging Face](https://huggingface.co/)** - Diffusers 库和模型托管
-- **[NVIDIA](https://nvidia.com/)** - TensorRT 和 CUDA 生态
-- **[GitHub Copilot](https://github.com/features/copilot)** - AI 编程助手，大幅提升了开发效率 🤖✨
+- **[Black Forest Labs](https://blackforestlabs.ai/)** - For open-sourcing FLUX.1 model
+- **[Hugging Face](https://huggingface.co/)** - For Diffusers library and model hosting
+- **[NVIDIA](https://nvidia.com/)** - For TensorRT and CUDA ecosystem
+- **[GitHub Copilot](https://github.com/features/copilot)** - AI programming assistant that significantly improved development efficiency 🤖✨
 
 ---
 
